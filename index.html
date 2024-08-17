@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="quarto-1.5.56" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+
+    <title>
+      Data Analysis Project Using Linear Regression – yelp-reviews-crime
+    </title>
+    <style>
+      code {
+        white-space: pre-wrap;
+      }
+      span.smallcaps {
+        font-variant: small-caps;
+      }
+      div.columns {
+        display: flex;
+        gap: min(4vw, 1.5em);
+      }
+      div.column {
+        flex: auto;
+        overflow-x: auto;
+      }
+      div.hanging-indent {
+        margin-left: 1.5em;
+        text-indent: -1.5em;
+      }
+      ul.task-list {
+        list-style: none;
+      }
+      ul.task-list li input[type="checkbox"] {
+        width: 0.8em;
+        margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */
+        vertical-align: middle;
+      }
+      /* CSS for syntax highlighting */
+      pre > code.sourceCode {
+        white-space: pre;
+        position: relative;
+      }
+      pre > code.sourceCode > span {
+        line-height: 1.25;
+      }
+      pre > code.sourceCode > span:empty {
+        height: 1.2em;
+      }
+      .sourceCode {
+        overflow: visible;
+      }
+      code.sourceCode > span {
+        color: inherit;
+        text-decoration: inherit;
+      }
+      div.sourceCode {
+        margin: 1em 0;
+      }
+      pre.sourceCode {
+        margin: 0;
+      }
+      @media screen {
+        div.sourceCode {
+          overflow: auto;
+        }
+      }
+      @media print {
+        pre > code.sourceCode {
+          white-space: pre-wrap;
+        }
+        pre > code.sourceCode > span {
+          display: inline-block;
+          text-indent: -5em;
+          padding-left: 5em;
+        }
+      }
+      pre.numberSource code {
+        counter-reset: source-line 0;
+      }
+      pre.numberSource code > span {
+        position: relative;
+        left: -4em;
+        counter-increment: source-line;
+      }
+      pre.numberSource code > span > a:first-child::before {
+        content: counter(source-line);
+        position: relative;
+        left: -1em;
+        text-align: right;
+        vertical-align: baseline;
+        border: none;
+        display: inline-block;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        padding: 0 4px;
+        width: 4em;
+      }
+      pre.numberSource {
+        margin-left: 3em;
+        padding-left: 4px;
+      }
+      div.sourceCode {
+      }
+      @media screen {
+        pre > code.sourceCode > span > a:first-child::before {
+          text-decoration: underline;
+        }
+      }
+    </style>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="site_libs/quarto-nav/quarto-nav.js"></script>
+    <script src="site_libs/quarto-nav/headroom.min.js"></script>
+    <script src="site_libs/clipboard/clipboard.min.js"></script>
+    <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+    <script src="site_libs/quarto-search/fuse.min.js"></script>
+    <script src="site_libs/quarto-search/quarto-search.js"></script>
+    <meta name="quarto:offset" content="./" />
+    <script src="site_libs/quarto-html/quarto.js"></script>
+    <script src="site_libs/quarto-html/popper.min.js"></script>
+    <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+    <script src="site_libs/quarto-html/anchor.min.js"></script>
+    <link href="site_libs/quarto-html/tippy.css" rel="stylesheet" />
+    <link
+      href="site_libs/quarto-html/quarto-syntax-highlighting.css"
+      rel="stylesheet"
+      id="quarto-text-highlighting-styles"
+    />
+    <script src="site_libs/bootstrap/bootstrap.min.js"></script>
+    <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet" />
+    <link
+      href="site_libs/bootstrap/bootstrap.min.css"
+      rel="stylesheet"
+      id="quarto-bootstrap"
+      data-mode="light"
+    />
+    <script id="quarto-search-options" type="application/json">
+      {
+        "location": "navbar",
+        "copy-button": false,
+        "collapse-after": 3,
+        "panel-placement": "end",
+        "type": "overlay",
+        "limit": 50,
+        "keyboard-shortcut": ["f", "/", "s"],
+        "show-item-context": false,
+        "language": {
+          "search-no-results-text": "No results",
+          "search-matching-documents-text": "matching documents",
+          "search-copy-link-title": "Copy link to search",
+          "search-hide-matches-text": "Hide additional matches",
+          "search-more-match-text": "more match in this document",
+          "search-more-matches-text": "more matches in this document",
+          "search-clear-button-title": "Clear",
+          "search-text-placeholder": "",
+          "search-detached-cancel-button-title": "Cancel",
+          "search-submit-button-title": "Submit",
+          "search-label": "Search"
+        }
+      }
+    </script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"
+      integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg=="
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="application/javascript">
+      define("jquery", [], function () {
+        return window.jQuery;
+      });
+    </script>
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="nav-fixed">
+    <div id="quarto-search-results"></div>
+    <header id="quarto-header" class="headroom fixed-top">
+      <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
+        <div class="navbar-container container-fluid">
+          <div class="navbar-brand-container mx-auto">
+            </a>
+          </div>
+          <div id="quarto-search" class="" title="Search"></div>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse"
+            role="menu"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="../index.html">
+                  <span class="menu-text">Home</span></a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  href="./index.html"
+                  aria-current="page"
+                >
+                  <span class="menu-text"
+                    >Data Analysis Project Using Linear Regression</span
+                  ></a
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- /navcollapse -->
+          <div class="quarto-navbar-tools"></div>
+        </div>
+        <!-- /container-fluid -->
+      </nav>
+    </header>
+    <!-- content -->
+    <div
+      id="quarto-content"
+      class="quarto-container page-columns page-rows-contents page-layout-article page-navbar"
+    >
+      <!-- sidebar -->
+      <!-- margin-sidebar -->
+      <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+          <h2 id="toc-title">On this page</h2>
+
+          <ul>
+            <li>
+              <a
+                href="#overview"
+                id="toc-overview"
+                class="nav-link active"
+                data-scroll-target="#overview"
+                >Overview</a
+              >
+            </li>
+            <li>
+              <a
+                href="#name-github-id"
+                id="toc-name-github-id"
+                class="nav-link"
+                data-scroll-target="#name-github-id"
+                >Name &amp; GitHub ID</a
+              >
+            </li>
+            <li>
+              <a
+                href="#research-question"
+                id="toc-research-question"
+                class="nav-link"
+                data-scroll-target="#research-question"
+                >Research Question</a
+              >
+              <ul class="collapse">
+                <li>
+                  <a
+                    href="#background-and-prior-work"
+                    id="toc-background-and-prior-work"
+                    class="nav-link"
+                    data-scroll-target="#background-and-prior-work"
+                    >Background and Prior Work</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                href="#hypothesis"
+                id="toc-hypothesis"
+                class="nav-link"
+                data-scroll-target="#hypothesis"
+                >Hypothesis</a
+              >
+            </li>
+            <li>
+              <a
+                href="#datasets"
+                id="toc-datasets"
+                class="nav-link"
+                data-scroll-target="#datasets"
+                >Dataset(s)</a
+              >
+            </li>
+            <li>
+              <a
+                href="#setup"
+                id="toc-setup"
+                class="nav-link"
+                data-scroll-target="#setup"
+                >Setup</a
+              >
+            </li>
+            <li>
+              <a
+                href="#data-cleaning"
+                id="toc-data-cleaning"
+                class="nav-link"
+                data-scroll-target="#data-cleaning"
+                >Data Cleaning</a
+              >
+              <ul class="collapse">
+                <li>
+                  <a
+                    href="#loading-data"
+                    id="toc-loading-data"
+                    class="nav-link"
+                    data-scroll-target="#loading-data"
+                    >Loading Data</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#checking-our-data"
+                    id="toc-checking-our-data"
+                    class="nav-link"
+                    data-scroll-target="#checking-our-data"
+                    >Checking Our Data</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#dropping-columns"
+                    id="toc-dropping-columns"
+                    class="nav-link"
+                    data-scroll-target="#dropping-columns"
+                    >Dropping Columns</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#cleaning-the-crime-data"
+                    id="toc-cleaning-the-crime-data"
+                    class="nav-link"
+                    data-scroll-target="#cleaning-the-crime-data"
+                    >Cleaning the Crime Data</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#clean-yelp-data"
+                    id="toc-clean-yelp-data"
+                    class="nav-link"
+                    data-scroll-target="#clean-yelp-data"
+                    >Clean Yelp Data</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                href="#data-analysis-results"
+                id="toc-data-analysis-results"
+                class="nav-link"
+                data-scroll-target="#data-analysis-results"
+                >Data Analysis &amp; Results</a
+              >
+              <ul class="collapse">
+                <li>
+                  <a
+                    href="#analysis-using-linear-regression"
+                    id="toc-analysis-using-linear-regression"
+                    class="nav-link"
+                    data-scroll-target="#analysis-using-linear-regression"
+                    >Analysis using Linear Regression</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a
+                href="#ethics-privacy"
+                id="toc-ethics-privacy"
+                class="nav-link"
+                data-scroll-target="#ethics-privacy"
+                >Ethics &amp; Privacy</a
+              >
+            </li>
+            <li>
+              <a
+                href="#conclusion-discussion"
+                id="toc-conclusion-discussion"
+                class="nav-link"
+                data-scroll-target="#conclusion-discussion"
+                >Conclusion &amp; Discussion</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <!-- main -->
+      <main class="content" id="quarto-document-content">
+        <header id="title-block-header" class="quarto-title-block default">
+          <div class="quarto-title">
+            <h1 class="title">Data Analysis Project Using Linear Regression</h1>
+          </div>
+
+          <div class="quarto-title-meta"></div>
+        </header>
+
+        <section id="overview" class="level1">
+          <h1>Overview</h1>
+          <p>
+            The goal of this project is to understand if there is a relationship
+            between the number of yelp reviews and the number of criminal
+            incidents on its associated neighborhood block, and/or if there is a
+            relationship between the overall yelp rating of a public park and
+            the number of criminal incidents on its block. Specifically, I will
+            be examining public parks in the city of San Diego that have had at
+            least one criminal incident in the year 2019. Ultimately, the
+            analysis suggests that a higher yelp rating for a given park
+            slightly positively correlates to a higher number of criminal
+            incidents on its block. Also, the analysis suggests that a higher
+            number of yelp reviews positively correlates to a higher number of
+            criminal incidents on its block.
+          </p>
+        </section>
+        <section id="name-github-id" class="level1">
+          <h1>Name &amp; GitHub ID</h1>
+          <ul>
+            <li>Name: Edgar Flores</li>
+            <li>GitHub Username: efloresCSE</li>
+          </ul>
+        </section>
+        <section id="research-question" class="level1">
+          <h1>Research Question</h1>
+          <p>
+            What is the relationship between the properties of a yelp rating of
+            a park and the number of criminal incidents on its neighborhood
+            block?
+          </p>
+          <section id="background-and-prior-work" class="level2">
+            <h2 class="anchored" data-anchor-id="background-and-prior-work">
+              Background and Prior Work
+            </h2>
+            <p>
+              To begin, the first thing to understand is the goals of the Parks
+              and Recreation department in San Diego. The San Diego Parks and
+              Recreation Master Plan states that it is their goal to commit to
+              upgrading security and increasing visitor satisfaction to the
+              parks in San Diego. [1] Recently, crime concerns and incidents in
+              the San Diego area have pushed the Parks and Recreation department
+              of San Diego to implement Park curfews [2]. This brings the
+              question of how a visitor’s perceived danger of the parks and its
+              surrounding area impacts their satisfaction towards these parks.
+            </p>
+            <p>
+              Looking into yelp reviews of the local parks in San Diego, one can
+              see evidence of user dissatisfaction in the form of low yelp
+              ratings because they feel that some parks and their areas are
+              dangerous or they feel that their well being is not secured. An
+              example of yelp reviews being used to predict a state of a
+              location is in an analysis where yelp review helped predict
+              unhygienic establishments in Seattle [3] This project relates to
+              my study as my goal is to see if there is a correlation between
+              yelp ratings and the state of crime in a local park.
+            </p>
+            <p>
+              Some relevant prior work that underwent a similar project analysis
+              was from a student in COGS 108 who tried to identify the
+              relationship between health inspection scores and yelp ratings.
+              [4] This was a sample project given to us by the instructor. This
+              analysis relates to my project as I will also be trying to find a
+              relationship between a measurable factor of a certain location
+              (the number of criminal incidents) and properties of its yelp
+              reviews such as their frequency and the overall rating of a park.
+              We will be utilizing similar techniques from this sample project
+              in this analysis.
+            </p>
+            <p>
+              References (include links): - 1)
+              https://www.sandiego.gov/complete-communities/parks-master-plan#:~:text=The%20Parks%20Master%20Plan%20aligns,equity%2C%20livability%2C%20and%20connectivity.
+              - 2)
+              https://www.sandiegouniontribune.com/communities/san-diego/story/2020-02-16/park-curfews-on-the-rise-in-san-diego-in-response-to-crime-concerns
+              - 3) https://dho.stanford.edu/wp-content/uploads/WWW_Final.pdf -
+              4)
+              https://github.com/COGS108/IndividProjects-Sp20/blob/main/FinalProject_michelemurakami.ipynb
+            </p>
+          </section>
+        </section>
+        <section id="hypothesis" class="level1">
+          <h1>Hypothesis</h1>
+          <p>
+            I hypothesize that parks with higher crime rates will have lower
+            yelp ratings. This is because more visitors might feel unsafe in the
+            area, and so will report lower levels of satisfaction with the park.
+            I also hypothesize that parks with a higher number of reviews will
+            have a higher number of crime rates. This is because more reviews
+            mean more traffic/people in the area, which might mean more criminal
+            incidents are bound to occur.
+          </p>
+        </section>
+        <section id="datasets" class="level1">
+          <h1>Dataset(s)</h1>
+          <p>
+            The ideal dataset for yelp information would include variables that
+            store the park names in San Diego, its block address, the number of
+            reviews, and the rating of the park itself. The ideal dataset for
+            crime rates would include variables that store a block’s address and
+            the number of criminal incidents that have taken place during that
+            year. We could extract information such as the rating for a park, or
+            the number of criminal incidents by using data science programming
+            concepts that we have learned in class.
+          </p>
+          <p>
+            The observations for the yelp information would be the yelp
+            information of a given park. The observation used for the crime
+            rates would be the number of criminal incidents on the block of a
+            park in San Diego.
+          </p>
+          <p>The two following datasets were given by the instructor.</p>
+          <ul>
+            <li>Dataset Name: Yelp_SD_Parks</li>
+            <li>Link to the dataset:
+              <a href="yelp_SD_parks.csv">yelp_SD_parks.csv</a>
+            </li>
+            <li>Number of observations: 833</li>
+          </ul>
+          <p>
+            This dataset includes the name of parks in San Diego, the number of
+            reviews for the park, their exact address, and their associated yelp
+            rating. Though, this dataset also has information on many non-parks
+            such as restaurants or apartments.
+          </p>
+          <ul>
+            <li>Dataset Name: pd_calls_for_service_2019</li>
+            <li>Link to the dataset:
+              <a href="pd_calls_for_service_2019_datasd.csv">pd_calls_for_service_2019_datasd.csv</a>
+            </li>
+            <li>Number of observations: 590,967</li>
+          </ul>
+          <p>
+            This dataset includes police calls for service in San Diego in 2019
+            and the block addresses where the incident took place (which is
+            broken down into many columns).
+          </p>
+          <p>
+            These are not exactly our ideal datasets. Yelp_SD_Parks has the
+            exact address of the park, and also includes many non-park locations
+            the ideal data set would have had the block address and only park
+            locations. pf_calls_for_service_2019 does not contain park
+            information exclusively either, and the block address is split
+            amongst many columns. Thus, we will have to utilize our data science
+            programming concepts to extract the necessary information from them.
+          </p>
+          <p>
+            First I plan to drop any columns from these data sets that contain
+            data that I do not have a use for. Then I will clean up both of the
+            datasets by getting the block address of each observation. I will
+            then merge these two datasets by their block address and remove any
+            locations from the data set that are not parks. Then I will analyze
+            this merged dataset to understand if there is a relationship between
+            a park’s yelp information and its criminal incidents.
+          </p>
+        </section>
+        <section id="setup" class="level1">
+          <h1>Setup</h1>
+          <div id="a1cb5249" class="cell" data-execution_count="1">
+            <div class="sourceCode cell-code" id="cb1">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#imports</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set plotting size parameter</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'figure.figsize'</span>] <span class="op">=</span> (<span class="dv">17</span>, <span class="dv">7</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(style<span class="op">=</span><span class="st">"white"</span>, font_scale<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> patsy</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#ignore warnings</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># for debug</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_rows"</span>, <span class="va">None</span>, <span class="st">"display.max_columns"</span>, <span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+          </div>
+        </section>
+        <section id="data-cleaning" class="level1">
+          <h1>Data Cleaning</h1>
+          <p>
+            In this section, our goal is to clean up and merge our datasets for
+            easy access and analysis.
+          </p>
+          <section id="loading-data" class="level2">
+            <h2 class="anchored" data-anchor-id="loading-data">Loading Data</h2>
+            <p>
+              We will being by loading the datasets that will be used in our
+              analysis.
+            </p>
+            <div id="4cfb1355" class="cell" data-execution_count="2">
+              <div class="sourceCode cell-code" id="cb2">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>yelp_df <span class="op">=</span> pd.read_csv(<span class="vs">r"C:\Users\efloresCSE\Downloads\yelp_SD_parks.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> pd.read_csv(<span class="vs">r"C:\Users\efloresCSE\Downloads\pd_calls_for_service_2019_datasd.csv"</span>, dtype <span class="op">=</span> {<span class="st">'address_number_primary'</span>: <span class="bu">str</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                                                                                               <span class="st">'address_dir_primary'</span>:<span class="bu">str</span>, <span class="st">'address_road_primary'</span> :<span class="bu">str</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                                                                                                 <span class="st">'address_sfx_primary'</span>:<span class="bu">str</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+          </section>
+          <section id="checking-our-data" class="level2">
+            <h2 class="anchored" data-anchor-id="checking-our-data">
+              Checking Our Data
+            </h2>
+            <div id="3c1f0a62" class="cell" data-execution_count="3">
+              <div class="sourceCode cell-code" id="cb3">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>yelp_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+              <div
+                class="cell-output cell-output-display"
+                data-execution_count="28"
+              >
+                <div>
+                  <table
+                    class="dataframe caption-top table table-sm table-striped small"
+                    data-quarto-postprocess="true"
+                    data-border="1"
+                  >
+                    <thead>
+                      <tr class="header">
+                        <th data-quarto-table-cell-role="th"></th>
+                        <th data-quarto-table-cell-role="th">name</th>
+                        <th data-quarto-table-cell-role="th">address</th>
+                        <th data-quarto-table-cell-role="th">phone</th>
+                        <th data-quarto-table-cell-role="th">id</th>
+                        <th data-quarto-table-cell-role="th">url</th>
+                        <th data-quarto-table-cell-role="th">rating</th>
+                        <th data-quarto-table-cell-role="th">review_count</th>
+                        <th data-quarto-table-cell-role="th">longitude</th>
+                        <th data-quarto-table-cell-role="th">latitude</th>
+                        <th data-quarto-table-cell-role="th">is_closed</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="odd">
+                        <td data-quarto-table-cell-role="th">0</td>
+                        <td>Balboa Park</td>
+                        <td>1549 El Prado San Diego, CA 92101</td>
+                        <td>1.619239e+10</td>
+                        <td>9M_FW_-Ipx93I36w-_ykBg</td>
+                        <td>
+                          https://www.yelp.com/biz/balboa-park-san-diego...
+                        </td>
+                        <td>5.0</td>
+                        <td>2105</td>
+                        <td>-117.153150</td>
+                        <td>32.734502</td>
+                        <td>False</td>
+                      </tr>
+                      <tr class="even">
+                        <td data-quarto-table-cell-role="th">1</td>
+                        <td>Civita Park</td>
+                        <td>7960 Civita Blvd San Diego, CA 92108</td>
+                        <td>NaN</td>
+                        <td>3AEHjqNrTmggA6G9VdhQfg</td>
+                        <td>
+                          https://www.yelp.com/biz/civita-park-san-diego...
+                        </td>
+                        <td>4.5</td>
+                        <td>46</td>
+                        <td>-117.147278</td>
+                        <td>32.778315</td>
+                        <td>False</td>
+                      </tr>
+                      <tr class="odd">
+                        <td data-quarto-table-cell-role="th">2</td>
+                        <td>Waterfront Park</td>
+                        <td>1600 Pacific Hwy San Diego, CA 92101</td>
+                        <td>1.619233e+10</td>
+                        <td>3unbJeYrn1RmInZGmjp80g</td>
+                        <td>
+                          https://www.yelp.com/biz/waterfront-park-san-d...
+                        </td>
+                        <td>4.5</td>
+                        <td>242</td>
+                        <td>-117.172479</td>
+                        <td>32.721952</td>
+                        <td>False</td>
+                      </tr>
+                      <tr class="even">
+                        <td data-quarto-table-cell-role="th">3</td>
+                        <td>Trolley Barn Park</td>
+                        <td>Adams Ave And Florida St San Diego, CA 92116</td>
+                        <td>NaN</td>
+                        <td>PvHxIYrmaiFKdWUDTMDzcg</td>
+                        <td>
+                          https://www.yelp.com/biz/trolley-barn-park-san...
+                        </td>
+                        <td>4.5</td>
+                        <td>102</td>
+                        <td>-117.143789</td>
+                        <td>32.762463</td>
+                        <td>False</td>
+                      </tr>
+                      <tr class="odd">
+                        <td data-quarto-table-cell-role="th">4</td>
+                        <td>Bay View Park</td>
+                        <td>413 1st St Coronado, CA 92118</td>
+                        <td>NaN</td>
+                        <td>6IF4VB9-fkv_F-LBvG8ppQ</td>
+                        <td>
+                          https://www.yelp.com/biz/bay-view-park-coronad...
+                        </td>
+                        <td>5.0</td>
+                        <td>42</td>
+                        <td>-117.178967</td>
+                        <td>32.701785</td>
+                        <td>False</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div id="f93657a3" class="cell" data-execution_count="4">
+              <div class="sourceCode cell-code" id="cb4">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>crime_df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+              <div
+                class="cell-output cell-output-display"
+                data-execution_count="29"
+              >
+                <div>
+                  <table
+                    class="dataframe caption-top table table-sm table-striped small"
+                    data-quarto-postprocess="true"
+                    data-border="1"
+                  >
+                    <thead>
+                      <tr class="header">
+                        <th data-quarto-table-cell-role="th"></th>
+                        <th data-quarto-table-cell-role="th">incident_num</th>
+                        <th data-quarto-table-cell-role="th">date_time</th>
+                        <th data-quarto-table-cell-role="th">day_of_week</th>
+                        <th data-quarto-table-cell-role="th">
+                          address_number_primary
+                        </th>
+                        <th data-quarto-table-cell-role="th">
+                          address_dir_primary
+                        </th>
+                        <th data-quarto-table-cell-role="th">
+                          address_road_primary
+                        </th>
+                        <th data-quarto-table-cell-role="th">
+                          address_sfx_primary
+                        </th>
+                        <th data-quarto-table-cell-role="th">
+                          address_dir_intersecting
+                        </th>
+                        <th data-quarto-table-cell-role="th">
+                          address_road_intersecting
+                        </th>
+                        <th data-quarto-table-cell-role="th">
+                          address_sfx_intersecting
+                        </th>
+                        <th data-quarto-table-cell-role="th">call_type</th>
+                        <th data-quarto-table-cell-role="th">disposition</th>
+                        <th data-quarto-table-cell-role="th">beat</th>
+                        <th data-quarto-table-cell-role="th">priority</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="odd">
+                        <td data-quarto-table-cell-role="th">0</td>
+                        <td>E19010000001</td>
+                        <td>2019-01-01 00:00:01</td>
+                        <td>1</td>
+                        <td>3800</td>
+                        <td>NaN</td>
+                        <td>NATIONAL</td>
+                        <td>AVE</td>
+                        <td>NaN</td>
+                        <td>NaN</td>
+                        <td>NaN</td>
+                        <td>AU1</td>
+                        <td>DUP</td>
+                        <td>441</td>
+                        <td>1</td>
+                      </tr>
+                      <tr class="even">
+                        <td data-quarto-table-cell-role="th">1</td>
+                        <td>E19010000002</td>
+                        <td>2019-01-01 00:00:04</td>
+                        <td>1</td>
+                        <td>6500</td>
+                        <td>NaN</td>
+                        <td>REFLECTION</td>
+                        <td>DR</td>
+                        <td>NaN</td>
+                        <td>NaN</td>
+                        <td>NaN</td>
+                        <td>415</td>
+                        <td>K</td>
+                        <td>321</td>
+                        <td>2</td>
+                      </tr>
+                      <tr class="odd">
+                        <td data-quarto-table-cell-role="th">2</td>
+                        <td>E19010000003</td>
+                        <td>2019-01-01 00:00:09</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>NaN</td>
+                        <td>06TH</td>
+                        <td>AVE</td>
+                        <td>NaN</td>
+                        <td>ISLAND</td>
+                        <td>NaN</td>
+                        <td>FD</td>
+                        <td>K</td>
+                        <td>523</td>
+                        <td>2</td>
+                      </tr>
+                      <tr class="even">
+                        <td data-quarto-table-cell-role="th">3</td>
+                        <td>E19010000004</td>
+                        <td>2019-01-01 00:00:19</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>NaN</td>
+                        <td>VESTA</td>
+                        <td>ST</td>
+                        <td>NaN</td>
+                        <td>MAIN</td>
+                        <td>NaN</td>
+                        <td>AU1</td>
+                        <td>W</td>
+                        <td>511</td>
+                        <td>1</td>
+                      </tr>
+                      <tr class="odd">
+                        <td data-quarto-table-cell-role="th">4</td>
+                        <td>E19010000005</td>
+                        <td>2019-01-01 00:00:31</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>NaN</td>
+                        <td>04TH</td>
+                        <td>AVE</td>
+                        <td>NaN</td>
+                        <td>ISLAND</td>
+                        <td>NaN</td>
+                        <td>586</td>
+                        <td>CAN</td>
+                        <td>523</td>
+                        <td>4</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="dropping-columns" class="level2">
+            <h2 class="anchored" data-anchor-id="dropping-columns">
+              Dropping Columns
+            </h2>
+            <p>
+              In this section, we will be dropping columns that hold data that
+              we will not be using in our analysis.
+            </p>
+            <p>
+              We dropped the following columns from the yelp dataset because
+            </p>
+            <ul>
+              <li>
+                phone, id, url, longitude, latitude
+                <ul>
+                  <li>
+                    Since we have the address of the park, this extra
+                    identifying information is unnecessary.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                is_closed
+                <ul>
+                  <li>
+                    Whether the park is currently closed is not relevant
+                    information as we want to analyze the incidents that
+                    occurred in 2019.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <p>
+              We dropped the following columns from the crime dataset because
+            </p>
+            <ul>
+              <li>
+                incident_num, date_time, day_of_week, priority
+                <ul>
+                  <li>
+                    The exact incident number, priority, day_of_week, or time of
+                    day is not important to us, we only care which block the
+                    incident took place.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                address_dir_intersecting. address_road_intersecting,
+                address_sfx_intersecting
+                <ul>
+                  <li>
+                    We cannot be sure if the incident took place on a park’s
+                    block if we only know a cross street.
+                  </li>
+                  <li>
+                    This means we will also have to drop observations that only
+                    have cross street information (see the section on cleaning
+                    up the crime data).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                beat
+                <ul>
+                  <li>
+                    We are already given the block of the incident so the
+                    general territory that the police patrolled is redundant.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <div id="39724dcd" class="cell" data-execution_count="5">
+              <div class="sourceCode cell-code" id="cb5">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>yelp_df <span class="op">=</span> yelp_df.drop([<span class="st">"phone"</span>, <span class="st">"id"</span>, <span class="st">"url"</span>, <span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"is_closed"</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df.drop([<span class="st">"incident_num"</span>, <span class="st">"date_time"</span>, <span class="st">"day_of_week"</span>, <span class="st">"address_dir_intersecting"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                          <span class="st">"address_road_intersecting"</span>, <span class="st">"address_sfx_intersecting"</span>, <span class="st">"beat"</span>, <span class="st">"priority"</span>], axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+          </section>
+          <section id="cleaning-the-crime-data" class="level2">
+            <h2 class="anchored" data-anchor-id="cleaning-the-crime-data">
+              Cleaning the Crime Data
+            </h2>
+            <p>
+              We will drop any observations that have an address number set as 0
+              as we can not be sure if these incidents took place on a specific
+              block.
+            </p>
+            <div id="5824dd54" class="cell" data-execution_count="6">
+              <div class="sourceCode cell-code" id="cb6">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df[crime_df.address_number_primary <span class="op">!=</span> <span class="st">"0"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+            <p>
+              We will also drop any observation that have missing values on the
+              call type or disposition as they will not give us substantial
+              information in clearly knowing if these incidents were verified to
+              be criminal or were cancelled calls.
+            </p>
+            <div id="4dee30d8" class="cell" data-execution_count="7">
+              <div class="sourceCode cell-code" id="cb7">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df.dropna(subset<span class="op">=</span>[<span class="st">'call_type'</span>], axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df.dropna(subset<span class="op">=</span>[<span class="st">'disposition'</span>], axis <span class="op">=</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+            <p>
+              Next, our goal is to merge the four address columns to make a
+              complete address.
+            </p>
+            <div id="0f265877" class="cell" data-execution_count="8">
+              <div class="sourceCode cell-code" id="cb8">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df.fillna(<span class="st">""</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df.assign(block_address <span class="op">=</span> crime_df[<span class="st">'address_number_primary'</span>])</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>crime_df[<span class="st">'block_address'</span>] <span class="op">=</span> crime_df[<span class="st">'address_number_primary'</span>] <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> crime_df[<span class="st">'address_dir_primary'</span>] <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> crime_df[<span class="st">'address_road_primary'</span>] <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> crime_df[<span class="st">'address_sfx_primary'</span>]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>crime_df[<span class="st">'block_address'</span>] <span class="op">=</span> crime_df[<span class="st">'block_address'</span>].<span class="bu">str</span>.replace(<span class="st">'  '</span>, <span class="st">' '</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Re-order the columns for clarity</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df[[<span class="st">'block_address'</span>, <span class="st">'call_type'</span>, <span class="st">'disposition'</span>, <span class="st">'address_number_primary'</span>, <span class="st">'address_dir_primary'</span>, <span class="st">'address_road_primary'</span>, <span class="st">'address_sfx_primary'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+            <p>
+              Next, using the disposition information, we will remove any calls
+              for service that are not verified criminal incidents such as those
+              that were canceled or those that were unfounded.
+            </p>
+            <div id="4c851180" class="cell" data-execution_count="9">
+              <div class="sourceCode cell-code" id="cb9">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove calls that were cancelled</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df[crime_df.disposition <span class="op">!=</span> <span class="st">"CAN"</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df[crime_df.disposition <span class="op">!=</span> <span class="st">"X"</span>]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df[crime_df.disposition <span class="op">!=</span> <span class="st">"W"</span>]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove unfounded service calls</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>crime_df <span class="op">=</span> crime_df[crime_df.disposition <span class="op">!=</span> <span class="st">"U"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+            <p>
+              In order to merge with our park data, we want to focus on the
+              number of incidents that took place a particular block, so we will
+              make a new data frame object that holds the addresses of the
+              blocks and the number of criminal incidents that took place on
+              those blocks in the year 2019.
+            </p>
+            <div id="d30780d2" class="cell" data-execution_count="10">
+              <div class="sourceCode cell-code" id="cb10">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>crime_df[<span class="st">'criminal_incidents'</span>] <span class="op">=</span> crime_df.groupby(<span class="st">'block_address'</span>)[<span class="st">'block_address'</span>].transform(<span class="st">'count'</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>crime_rate_df <span class="op">=</span> pd.concat([crime_df[<span class="st">'block_address'</span>], crime_df[<span class="st">'criminal_incidents'</span>]], axis<span class="op">=</span><span class="dv">1</span>, keys<span class="op">=</span>[<span class="st">'block_address'</span>, <span class="st">'criminal_incidents'</span>])</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#delete any duplicate observations</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>crime_rate_df <span class="op">=</span> crime_rate_df.drop_duplicates(subset<span class="op">=</span>[<span class="st">'block_address'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+          </section>
+          <section id="clean-yelp-data" class="level2">
+            <h2 class="anchored" data-anchor-id="clean-yelp-data">
+              Clean Yelp Data
+            </h2>
+            <p>
+              The goal of this section is to obtain the block address of each
+              park. We will obtain this by removing the last three elements of
+              the yelp address (city, state, zip code), and round the address
+              number down.
+            </p>
+            <div id="3a7fd705" class="cell" data-execution_count="11">
+              <div class="sourceCode cell-code" id="cb11">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove zip, city and state info</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">"clean_address"</span>] <span class="op">=</span> yelp_df[<span class="st">"address"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="st">" "</span>.join(x.split()[: <span class="op">-</span><span class="dv">2</span>]))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>cities <span class="op">=</span> [<span class="st">'San Diego,'</span>,<span class="st">'Coronado,'</span>,<span class="st">'La Jolla,'</span>, <span class="st">'Chula Vista,'</span>, <span class="st">'Oceanside,'</span>, <span class="st">'Carlsbad,'</span>, <span class="st">'El Cajon,'</span>, <span class="st">'Encinitas,'</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Poway,'</span>, <span class="st">'La Mesa,'</span>, <span class="st">'Del Mar,'</span>, <span class="st">'San Marcos,'</span>, <span class="st">'National City,'</span>, <span class="st">'Vista,'</span>, <span class="st">'Santee,'</span>, <span class="st">'Julian,'</span>, <span class="st">'Imperial Beach,'</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Spring Valley,'</span>, <span class="st">'Alpine,'</span>, <span class="st">'Rancho San Diego,'</span>, <span class="st">'Fallbrook,'</span>, <span class="st">'Lemon Grove,'</span>, <span class="st">'Bonita,'</span>, <span class="st">'Solana Beach,'</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                <span class="st">'Rancho Santa Fe,'</span>, <span class="st">'Lakeside,'</span>, <span class="st">'Ramona,'</span>, <span class="st">'Camp Pendleton North,'</span>, <span class="st">'Jamul,'</span>, <span class="st">'Valley Center,'</span>, <span class="st">'Borrego Springs,'</span>, </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'Jacumba Hot Springs,'</span>, <span class="st">'Tecate,'</span>, <span class="st">'Bonsall,'</span>, <span class="st">'Potrero,'</span>, <span class="st">'Mount Laguna,'</span>, <span class="st">'Descanso,'</span>, <span class="st">'Campo,'</span>, <span class="st">'Pine Valley,'</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'Lake San Marcos,'</span>, <span class="st">'Fairbanks Ranch,'</span>, <span class="st">'Harbison Canyon,'</span>, <span class="st">'Camp Pendeleton South,'</span>, <span class="st">'Boulevard,'</span>, <span class="st">'Crest,'</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                 <span class="st">'Granite Hills,'</span>, <span class="st">'Bostonia,'</span>, <span class="st">'Rainbow,'</span>, <span class="st">'Winter Gardens,'</span>, <span class="st">'Hidden Meadows,'</span>]</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">#go through each observation, if cities match remove it</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ind <span class="kw">in</span> yelp_df.index:</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> curr_word <span class="kw">in</span> cities:</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        word_list <span class="op">=</span> curr_word.split()</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        size <span class="op">=</span> <span class="bu">len</span>(word_list)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>(<span class="bu">len</span>(yelp_df[<span class="st">'clean_address'</span>][ind].split()) <span class="op">&gt;=</span> size):</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (word_list <span class="op">==</span> yelp_df[<span class="st">'clean_address'</span>][ind].split()[<span class="op">-</span>size:]):</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>                yelp_df[<span class="st">'clean_address'</span>][ind] <span class="op">=</span> <span class="st">' '</span>.join(yelp_df[<span class="st">'clean_address'</span>][ind].split()[:<span class="op">-</span>size])</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co">#round down address numbers</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">"clean_address2"</span>] <span class="op">=</span> yelp_df[<span class="st">"address"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="st">" "</span>.join(x.split()[: <span class="dv">1</span>]))</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">"clean_address"</span>] <span class="op">=</span> yelp_df[<span class="st">"clean_address"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="st">" "</span>.join(x.split()[<span class="dv">1</span>:]))</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">"clean_address2"</span>] <span class="op">=</span> yelp_df[<span class="st">"clean_address2"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="co"># # go thorugh and round down numbers</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ind <span class="kw">in</span> yelp_df.index:</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (yelp_df[<span class="st">'clean_address2'</span>][ind].isdigit()):</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        yelp_df[<span class="st">'clean_address2'</span>][ind] <span class="op">=</span> <span class="bu">str</span>(<span class="bu">int</span>((<span class="bu">int</span>(yelp_df[<span class="st">'clean_address2'</span>][ind])<span class="op">/</span> <span class="dv">100</span>))<span class="op">*</span><span class="dv">100</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="co"># #Concatenate back together</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">'block_address'</span>] <span class="op">=</span> yelp_df[<span class="st">'clean_address2'</span>] <span class="op">+</span> <span class="st">" "</span> <span class="op">+</span> yelp_df[<span class="st">'clean_address'</span>]</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Now that we have the block_address, we can drop our clean_address and clean_address2 columns</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>yelp_df <span class="op">=</span> yelp_df.drop([<span class="st">"clean_address"</span>, <span class="st">"clean_address2"</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">'block_address'</span>] <span class="op">=</span> yelp_df[<span class="st">'block_address'</span>].<span class="bu">str</span>.upper() </span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>yelp_df[<span class="st">'name'</span>] <span class="op">=</span> yelp_df[<span class="st">'name'</span>].<span class="bu">str</span>.upper() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+            <p>
+              Finally we will merge the yelp rating information with the crime
+              rate information by their block address
+            </p>
+            <div id="aee04a39" class="cell" data-execution_count="12">
+              <div class="sourceCode cell-code" id="cb12">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.merge(yelp_df, crime_rate_df, on<span class="op">=</span><span class="st">'block_address'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+            <p>
+              We previously noticed that some of the observations from the
+              yelp_SD_parks data are not actually parks, it is impotant that we
+              remove these because, for example, a restaurant with a high rating
+              in an area with a high crime rate can corrupt our analysis.
+            </p>
+            <div id="9876a5a2" class="cell" data-execution_count="13">
+              <div class="sourceCode cell-code" id="cb13">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Keep all strings that have park in the name</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df.name.<span class="bu">str</span>.contains(<span class="st">"PARK"</span>)]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>not_park <span class="op">=</span> [<span class="st">'PARKING'</span>, <span class="st">'PARK-IT-ON-MARKET'</span>, <span class="st">'INN AT THE PARK'</span>, <span class="st">'TOWN PARK BILLAS'</span>, <span class="st">'ENCONTRO NORTH PARK'</span>, <span class="st">'NORTH PARK BEER COMPANY'</span>, <span class="st">'619 SPIRITS NORTH PARK'</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>           <span class="st">'NORTH PARK OPTOMETRY'</span>, <span class="st">'URBN - NORTH PARK'</span>, <span class="st">'NORTH PARK NURSERY'</span>, <span class="st">'PARKSIDE TERRACE'</span>, <span class="st">'UNION COWORK NORTH PARK'</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">'COLINA PARK GOLF COURSE'</span>]</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove all entries with names that are not parks</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> curr_word <span class="kw">in</span> not_park:</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df[<span class="op">~</span>df.name.<span class="bu">str</span>.contains(curr_word)]</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#reset the index</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>df.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+        <section id="data-analysis-results" class="level1">
+          <h1>Data Analysis &amp; Results</h1>
+          <p>
+            We weill start by obtaining a general understanding of our data
+            using the describe functionality.
+          </p>
+          <div id="6fc0c056" class="cell" data-execution_count="14">
+            <div class="sourceCode cell-code" id="cb14">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div
+              class="cell-output cell-output-display"
+              data-execution_count="39"
+            >
+              <div>
+                <table
+                  class="dataframe caption-top table table-sm table-striped small"
+                  data-quarto-postprocess="true"
+                  data-border="1"
+                >
+                  <thead>
+                    <tr class="header">
+                      <th data-quarto-table-cell-role="th"></th>
+                      <th data-quarto-table-cell-role="th">rating</th>
+                      <th data-quarto-table-cell-role="th">review_count</th>
+                      <th data-quarto-table-cell-role="th">
+                        criminal_incidents
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="odd">
+                      <td data-quarto-table-cell-role="th">count</td>
+                      <td>88.000000</td>
+                      <td>88.000000</td>
+                      <td>88.000000</td>
+                    </tr>
+                    <tr class="even">
+                      <td data-quarto-table-cell-role="th">mean</td>
+                      <td>3.909091</td>
+                      <td>40.568182</td>
+                      <td>43.443182</td>
+                    </tr>
+                    <tr class="odd">
+                      <td data-quarto-table-cell-role="th">std</td>
+                      <td>0.697061</td>
+                      <td>79.686858</td>
+                      <td>56.615025</td>
+                    </tr>
+                    <tr class="even">
+                      <td data-quarto-table-cell-role="th">min</td>
+                      <td>1.500000</td>
+                      <td>1.000000</td>
+                      <td>1.000000</td>
+                    </tr>
+                    <tr class="odd">
+                      <td data-quarto-table-cell-role="th">25%</td>
+                      <td>3.500000</td>
+                      <td>5.000000</td>
+                      <td>10.750000</td>
+                    </tr>
+                    <tr class="even">
+                      <td data-quarto-table-cell-role="th">50%</td>
+                      <td>4.000000</td>
+                      <td>10.500000</td>
+                      <td>24.000000</td>
+                    </tr>
+                    <tr class="odd">
+                      <td data-quarto-table-cell-role="th">75%</td>
+                      <td>4.500000</td>
+                      <td>42.500000</td>
+                      <td>55.250000</td>
+                    </tr>
+                    <tr class="even">
+                      <td data-quarto-table-cell-role="th">max</td>
+                      <td>5.000000</td>
+                      <td>542.000000</td>
+                      <td>317.000000</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <p>
+            
+            We see that we will be analyzing 89 parks in the San Diego area and
+            these parks have an average yelp_rating of 3.91 and their respective
+            blocks had an average crime rate of about 43 criminal incidents in
+            the year 2019. (note, we are not analyzing all of the parks in San
+            Diego, and this limitation will be discussed in the conclusion)
+          </p>
+          <p>
+            Let’s do some exploratory data visualization to further improve our
+            understanding of the data
+          </p>
+          <div id="2301b732" class="cell" data-execution_count="15">
+            <div class="sourceCode cell-code" id="cb15">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> pd.plotting.scatter_matrix(df, figsize<span class="op">=</span>(<span class="dv">15</span>,<span class="dv">10</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Scatterplot of columns in "</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-display">
+              <div>
+                <figure class="figure">
+                  <p>
+                    <img
+                      src="index_files/figure-html/cell-16-output-1.png"
+                      width="1201"
+                      height="920"
+                      class="figure-img"
+                    />
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+          <p>
+            We notice that there some outliers in the columns. Let’s take a look
+            to see if the data is alright to work with.
+          </p>
+          <div id="afc7cb59" class="cell" data-execution_count="16">
+            <div class="sourceCode cell-code" id="cb16">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#check max value in review count</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.loc[df[<span class="st">'rating'</span>].idxmax()])</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#check max value in crime counts</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.loc[df[<span class="st">'criminal_incidents'</span>].idxmax()])</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#check max value in ewview counts</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.loc[df[<span class="st">'review_count'</span>].idxmax()])</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#check min value in review count</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.loc[df[<span class="st">'review_count'</span>].idxmin()])</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#check min value in review count</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.loc[df[<span class="st">'rating'</span>].idxmin()])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-stdout">
+              <pre><code>name                             LINDA VISTA SKATE PARK
+address               6893 Osler St San Diego, CA 92111
+rating                                              5.0
+review_count                                          3
+block_address                             6800 OSLER ST
+criminal_incidents                                   36
+Name: 23, dtype: object
+name                     COLINA DEL SOL PARK &amp; REC CENTER
+address               5319 Orange Ave San Diego, CA 92115
+rating                                                3.5
+review_count                                           13
+block_address                             5300 ORANGE AVE
+criminal_incidents                                    317
+Name: 35, dtype: object
+name                  OLD TOWN SAN DIEGO STATE HISTORIC PARK
+address                  4002 Wallace St San Diego, CA 92110
+rating                                                   4.0
+review_count                                             542
+block_address                                4000 WALLACE ST
+criminal_incidents                                        38
+Name: 46, dtype: object
+name                           HOWARD LANE NEIGHBORHOOD PARK
+address               1626 Dairy Mart Rd San Diego, CA 92173
+rating                                                   5.0
+review_count                                               1
+block_address                             1600 DAIRY MART RD
+criminal_incidents                                        71
+Name: 49, dtype: object
+name                                                LAMAR PARK
+address               3180 Bancroft Dr Spring Valley, CA 91977
+rating                                                     1.5
+review_count                                                12
+block_address                                 3100 BANCROFT DR
+criminal_incidents                                           1
+Name: 34, dtype: object</code></pre>
+            </div>
+          </div>
+          <p>
+            These are all valid parks, so this data seems fine to work with. We
+            will continue our analysis.
+          </p>
+          <p>
+            Next, we will plot the distributions of our data, we will also clean
+            up the names for better viewing.
+          </p>
+          <div id="4bb485e7" class="cell" data-execution_count="17">
+            <div class="sourceCode cell-code" id="cb18">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>f2 <span class="op">=</span> sns.distplot(df[<span class="st">'rating'</span>], kde<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>f2.set_title(<span class="st">'Yelp Rating Distribution of Parks'</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>f2.set_ylabel(<span class="st">'Number of Parks'</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>f2.set_xlabel(<span class="st">'Yelp Rating'</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>f2 <span class="op">=</span> plt.gcf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-display">
+              <div>
+                <figure class="figure">
+                  <p>
+                    <img
+                      src="index_files/figure-html/cell-18-output-1.png"
+                      width="1364"
+                      height="643"
+                      class="figure-img"
+                    />
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+          <p>
+            For our Rating Distribution, we see that the scores can acheive a
+            max rating of 5.0 and we see that most of the parks hold a rating of
+            3.5-4.5.
+          </p>
+          <div id="38ba207f" class="cell" data-execution_count="18">
+            <div class="sourceCode cell-code" id="cb19">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>f4 <span class="op">=</span> sns.distplot(df[<span class="st">'review_count'</span>], kde<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>f4.set_title(<span class="st">'Number of Yelp Reviews Distribution of Parks'</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>f4.set_ylabel(<span class="st">'Number of Parks'</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>f4.set_xlabel(<span class="st">'Number of Yelp Reviews'</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>f4 <span class="op">=</span> plt.gcf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-display">
+              <div>
+                <figure class="figure">
+                  <p>
+                    <img
+                      src="index_files/figure-html/cell-19-output-1.png"
+                      width="1364"
+                      height="643"
+                      class="figure-img"
+                    />
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+          <p>
+            For our number of Yelp Reviews Distribution, we see that most parks
+            had less than 100 review
+          </p>
+          <div id="4f600cc5" class="cell" data-execution_count="19">
+            <div class="sourceCode cell-code" id="cb20">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>f3 <span class="op">=</span> sns.distplot(df[<span class="st">'criminal_incidents'</span>], kde<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>f3.set_title(<span class="st">'Number of Criminal Incidents Distribution of Parks'</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>f3.set_ylabel(<span class="st">'Number of Parks'</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>f3.set_xlabel(<span class="st">'Number of Criminal Incidents'</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>f3 <span class="op">=</span> plt.gcf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-display">
+              <div>
+                <figure class="figure">
+                  <p>
+                    <img
+                      src="index_files/figure-html/cell-20-output-1.png"
+                      width="1364"
+                      height="642"
+                      class="figure-img"
+                    />
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+          <p>
+            For our Number of Criminal Incidents Distribution, we see that most
+            parks in San Diego had approximately less than 50 criminal incidents
+            in 2019.
+          </p>
+          <div id="13f67bc6" class="cell" data-execution_count="20">
+            <div class="sourceCode cell-code" id="cb21">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>f4 <span class="op">=</span> sns.scatterplot(x<span class="op">=</span><span class="st">'rating'</span>, y<span class="op">=</span><span class="st">'criminal_incidents'</span>, data<span class="op">=</span>df)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>f4.set_title(<span class="st">'Relationship between Number of Criminal Incidents and Yelp Ratings of a Park'</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>f4.set_xlabel(<span class="st">'Yelp Rating'</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>f4.set_ylabel(<span class="st">'Number of Criminal Incidents'</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>f4 <span class="op">=</span> plt.gcf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-display">
+              <div>
+                <figure class="figure">
+                  <p>
+                    <img
+                      src="index_files/figure-html/cell-21-output-1.png"
+                      width="1380"
+                      height="643"
+                      class="figure-img"
+                    />
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+          <p>
+            The relationship between the number of criminal incidents on a
+            park’s block and yelp rating of a park is unclear, we will utilize
+            the technique of linear regression to better analyze our data
+          </p>
+          <div id="c903e6e9" class="cell" data-execution_count="21">
+            <div class="sourceCode cell-code" id="cb22">
+              <pre
+                class="sourceCode python code-with-copy"
+              ><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>f4 <span class="op">=</span> sns.scatterplot(x<span class="op">=</span><span class="st">'review_count'</span>, y<span class="op">=</span><span class="st">'criminal_incidents'</span>, data<span class="op">=</span>df)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>f4.set_title(<span class="st">'Relationship between number of Criminal Incidents and the Number of Yelp Reviews'</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>f4.set_xlabel(<span class="st">'Number of Yelp Reviews'</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>f4.set_ylabel(<span class="st">'Number of Criminal Incidents'</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>f4 <span class="op">=</span> plt.gcf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+            </div>
+            <div class="cell-output cell-output-display">
+              <div>
+                <figure class="figure">
+                  <p>
+                    <img
+                      src="index_files/figure-html/cell-22-output-1.png"
+                      width="1380"
+                      height="643"
+                      class="figure-img"
+                    />
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+          <p>
+            The relationship betwee the number of criminal incidents on a park’s
+            block and number of yelp ratings of a park is unclear, we will
+            utilize the technique of linear regression to better analyze this
+            data as well.
+          </p>
+          <section id="analysis-using-linear-regression" class="level2">
+            <h2
+              class="anchored"
+              data-anchor-id="analysis-using-linear-regression"
+            >
+              Analysis using Linear Regression
+            </h2>
+            <div id="df94dab0" class="cell" data-execution_count="22">
+              <div class="sourceCode cell-code" id="cb23">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create thje model</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>outcome, predictors <span class="op">=</span> patsy.dmatrices(<span class="st">'criminal_incidents ~ rating'</span>, df)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> sm.OLS(outcome, predictors)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co">## fit the model</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> mod.fit()</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co">## look at the results</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+              <div class="cell-output cell-output-stdout">
+                <pre><code>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:     criminal_incidents   R-squared:                       0.009
+Model:                            OLS   Adj. R-squared:                 -0.003
+Method:                 Least Squares   F-statistic:                    0.7681
+Date:                Thu, 15 Aug 2024   Prob (F-statistic):              0.383
+Time:                        19:50:51   Log-Likelihood:                -479.16
+No. Observations:                  88   AIC:                             962.3
+Df Residuals:                      86   BIC:                             967.3
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept     13.5702     34.616      0.392      0.696     -55.244      82.385
+rating         7.6419      8.719      0.876      0.383      -9.691      24.975
+==============================================================================
+Omnibus:                       76.462   Durbin-Watson:                   2.020
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              475.420
+Skew:                           2.854   Prob(JB):                    5.81e-104
+Kurtosis:                      12.852   Cond. No.                         24.1
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+              </div>
+            </div>
+            <div id="2e5f4ab1" class="cell" data-execution_count="23">
+              <div class="sourceCode cell-code" id="cb25">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the orginal data (as before)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span><span class="st">'rating'</span>, y<span class="op">=</span><span class="st">'criminal_incidents'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, data<span class="op">=</span>df, s<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate and plot the model fit line</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>xs <span class="op">=</span> np.arange(df[<span class="st">'rating'</span>].<span class="bu">min</span>(), df[<span class="st">'rating'</span>].<span class="bu">max</span>())</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>ys <span class="op">=</span> <span class="fl">9.4110</span> <span class="op">*</span> xs <span class="op">+</span> <span class="fl">8.0928</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>plt.plot(xs, ys, <span class="st">'--k'</span>, linewidth<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">'Model'</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Yelp Ratings'</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Number of Criminal Incidents'</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Relationship between Number of Criminal Incidents and Yelp Ratings of Public Park in San Diego'</span>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>plt.legend()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+              <div class="cell-output cell-output-display">
+                <div>
+                  <figure class="figure">
+                    <p>
+                      <img
+                        src="index_files/figure-html/cell-24-output-1.png"
+                        width="1435"
+                        height="643"
+                        class="figure-img"
+                      />
+                    </p>
+                  </figure>
+                </div>
+              </div>
+            </div>
+            <p>
+              The model suggests that there may be a small correlation between
+              the number of criminal incidents on a park’s block and the yelp
+              rating of that park. The higher the Yelp rating, the higher the
+              criminal incidents.
+            </p>
+            <div id="34ffd50b" class="cell" data-execution_count="24">
+              <div class="sourceCode cell-code" id="cb26">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create thje model</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>outcome, predictors <span class="op">=</span> patsy.dmatrices(<span class="st">'criminal_incidents ~ review_count'</span>, df)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> sm.OLS(outcome, predictors)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">## fit the model</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> mod.fit()</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="co">## look at the results</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+              <div class="cell-output cell-output-stdout">
+                <pre><code>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:     criminal_incidents   R-squared:                       0.000
+Model:                            OLS   Adj. R-squared:                 -0.012
+Method:                 Least Squares   F-statistic:                  0.003176
+Date:                Thu, 15 Aug 2024   Prob (F-statistic):              0.955
+Time:                        19:50:52   Log-Likelihood:                -479.55
+No. Observations:                  88   AIC:                             963.1
+Df Residuals:                      86   BIC:                             968.1
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+================================================================================
+                   coef    std err          t      P&gt;|t|      [0.025      0.975]
+--------------------------------------------------------------------------------
+Intercept       43.6183      6.819      6.396      0.000      30.062      57.175
+review_count    -0.0043      0.077     -0.056      0.955      -0.157       0.148
+==============================================================================
+Omnibus:                       75.887   Durbin-Watson:                   2.038
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              459.500
+Skew:                           2.841   Prob(JB):                    1.66e-100
+Kurtosis:                      12.645   Cond. No.                         100.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+              </div>
+            </div>
+            <div id="fb71fa07" class="cell" data-execution_count="25">
+              <div class="sourceCode cell-code" id="cb28">
+                <pre
+                  class="sourceCode python code-with-copy"
+                ><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the orginal data (as before)</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(x<span class="op">=</span><span class="st">'review_count'</span>, y<span class="op">=</span><span class="st">'criminal_incidents'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, data<span class="op">=</span>df, s<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate and plot the model fit line</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>xs <span class="op">=</span> np.arange(df[<span class="st">'review_count'</span>].<span class="bu">min</span>(), df[<span class="st">'review_count'</span>].<span class="bu">max</span>())</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>ys <span class="op">=</span> <span class="fl">0.0820</span> <span class="op">*</span> xs <span class="op">+</span> <span class="fl">40.6137</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>plt.plot(xs, ys, <span class="st">'--k'</span>, linewidth<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">'Model'</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Yelp Reviews'</span>)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Number of Criminal Incidents'</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Relationship between Number of Criminal Incidents and Yelp Ratings Public Parks in San Diego'</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>plt.legend()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+              </div>
+              <div class="cell-output cell-output-display">
+                <div>
+                  <figure class="figure">
+                    <p>
+                      <img
+                        src="index_files/figure-html/cell-26-output-1.png"
+                        width="1426"
+                        height="643"
+                        class="figure-img"
+                      />
+                    </p>
+                  </figure>
+                </div>
+              </div>
+            </div>
+            <p>
+              The model suggests that there may be a larger positive correlation
+              between the number of Yelp reviews and the number of criminal
+              incidents on a park’s block. The higher the number of Yelp
+              reviews, the higher the criminal incidents.
+            </p>
+          </section>
+        </section>
+        <section id="ethics-privacy" class="level1">
+          <h1>Ethics &amp; Privacy</h1>
+          <p>
+            There is a concern for bias in the yelp user reviews. Since a factor
+            of this project depends on the opinions of users, these user’s might
+            have a bias on the parks based on such factors as the neighborhood
+            it is in or even the social status or race of people who have been
+            seen at the parks, and though unsafe conditions have not been
+            observed by the user, they might deem it as dangerous based on their
+            prejudice/human bias. It is impossible to know/account for the bias
+            of each user, but it is important to note this is in our analysis.
+            This is also a limitation of this analysis.
+          </p>
+          <p>
+            A concern is that there is an issue in how the crime rates are
+            collected. Since it will depend on reported criminal incidents, and
+            since many criminal incidents go unreported, this is not a
+            completely accurate method of accessing the complete amount of
+            criminal incidents that occur at any given park. It is impossible to
+            know if the criminal incidents reported are all of the incidents
+            that occurred,, but it is important to note this in our analysis.
+          </p>
+          <p>
+            Also, there is a concern for bias in canceled or unfounded police
+            calls. There is a chance that an actual criminal incident took
+            place, it might have just not been communicated well or police
+            service was incorrectly deemed to be unnecessary by an official.
+            This is an issue of human error, and though this is unavoidable, it
+            should be noted.
+          </p>
+          <p>
+            The datasets used were provided for me and no user information was
+            used for this analysis. Though someone could easily google the yelp
+            reviews on a park that was explicitly shown on this analysis and
+            find out who were the users who left it, this shouldn’t be an issue
+            as yelp information is already public.
+          </p>
+        </section>
+        <section id="conclusion-discussion" class="level1">
+          <h1>Conclusion &amp; Discussion</h1>
+          <p>
+            The purpose of this analysis was to understand if there is a
+            relationship between the yelp rating of a park and the number of
+            criminal incidents in its area (by block), as well as the number of
+            yelp reviews and the criminal incidents. We did not exactly start
+            with an ideal dataset so a substantial amount of data wrangling was
+            applied to get the data into a manageable state. Next, we merged the
+            information on the yelp information of the parks and the criminal
+            incidents on its block. After, we described and explored our data on
+            yelp ratings, the number of yelp reviews, and the number of criminal
+            incidents. Finally, we used linear regression to explore and
+            visualize their relationship with each other. Based on these results
+            we found that there is a slight positive correlation between Yelp
+            ratings and the number of criminal incidents. Meaning, that the
+            higher the yelp rating, the higher number of criminal incidents.
+            This analysis goes against my original hypothesis stating that the
+            lower the yelp rating, the higher number of criminal incidents. We
+            also found that there is a slight positive correlation between the
+            number of yelp reviews and the number of criminal incidents, which
+            follows my original hypothesis.
+          </p>
+          <p>
+            There were some limitations to this analysis. One is that we did not
+            analyze all of the parks in the San Diego Area. The San Diego Parks
+            and Recreation website states that there are around 340 parks in San
+            Diego and we only analyzed 89 of them. One reason for this was that
+            this analysis focused on parks with at least one criminal incident
+            in the year 2019. Aside from this, some parks might have been
+            overlooked because my method of extracting park information from the
+            yelp dataset was flawed, or because some parks were not listed on
+            yelp. Since we made our data frame object by combing observations
+            from yelp_parks and pd_calls_for_2019 by the block address column,
+            if there were no calls to a specific park block, it would not be in
+            our dataset. A follow-up analysis would consist of including all
+            ~340 parks, including ones that did not have criminal incidents.
+            Another limitation was in understanding the data from the
+            pd_service_calls_2019 dataset. As I am not well versed in police
+            jargon, nor do I have any prior experience with disposition codes or
+            call types, I might have excluded some criminal incidents or
+            included some non-criminal incidents because of my lack of
+            specialization in this field. Also, I chose to analyze the year 2019
+            instead of 2020 because 2020 has been an unprecedented year due to
+            the COVID-19 pandemic. If I would have analyzed 2020 there might
+            have been some deviation from these results because of certain crime
+            rate increases that have been reported during this year.
+          </p>
+          <p>
+            Understanding if there are a relationship between public (yelp)
+            reviews and crime rate can have an important impact on society. From
+            the results of this project, this might be able to change the common
+            perspective that a badly reviewed park that is not held in good
+            public opinion is not necessarily a dangerous one, and the more
+            popular park near your city might be.
+          </p>
+        </section>
+      </main>
+      <!-- /main -->
+      <script id="quarto-html-after-body" type="application/javascript">
+        window.document.addEventListener("DOMContentLoaded", function (event) {
+          const toggleBodyColorMode = (bsSheetEl) => {
+            const mode = bsSheetEl.getAttribute("data-mode");
+            const bodyEl = window.document.querySelector("body");
+            if (mode === "dark") {
+              bodyEl.classList.add("quarto-dark");
+              bodyEl.classList.remove("quarto-light");
+            } else {
+              bodyEl.classList.add("quarto-light");
+              bodyEl.classList.remove("quarto-dark");
+            }
+          };
+          const toggleBodyColorPrimary = () => {
+            const bsSheetEl = window.document.querySelector(
+              "link#quarto-bootstrap"
+            );
+            if (bsSheetEl) {
+              toggleBodyColorMode(bsSheetEl);
+            }
+          };
+          toggleBodyColorPrimary();
+          const icon = "";
+          const anchorJS = new window.AnchorJS();
+          anchorJS.options = {
+            placement: "right",
+            icon: icon,
+          };
+          anchorJS.add(".anchored");
+          const isCodeAnnotation = (el) => {
+            for (const clz of el.classList) {
+              if (clz.startsWith("code-annotation-")) {
+                return true;
+              }
+            }
+            return false;
+          };
+          const onCopySuccess = function (e) {
+            // button target
+            const button = e.trigger;
+            // don't keep focus
+            button.blur();
+            // flash "checked"
+            button.classList.add("code-copy-button-checked");
+            var currentTitle = button.getAttribute("title");
+            button.setAttribute("title", "Copied!");
+            let tooltip;
+            if (window.bootstrap) {
+              button.setAttribute("data-bs-toggle", "tooltip");
+              button.setAttribute("data-bs-placement", "left");
+              button.setAttribute("data-bs-title", "Copied!");
+              tooltip = new bootstrap.Tooltip(button, {
+                trigger: "manual",
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8],
+              });
+              tooltip.show();
+            }
+            setTimeout(function () {
+              if (tooltip) {
+                tooltip.hide();
+                button.removeAttribute("data-bs-title");
+                button.removeAttribute("data-bs-toggle");
+                button.removeAttribute("data-bs-placement");
+              }
+              button.setAttribute("title", currentTitle);
+              button.classList.remove("code-copy-button-checked");
+            }, 1000);
+            // clear code selection
+            e.clearSelection();
+          };
+          const getTextToCopy = function (trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+          };
+          const clipboard = new window.ClipboardJS(
+            ".code-copy-button:not([data-in-quarto-modal])",
+            {
+              text: getTextToCopy,
+            }
+          );
+          clipboard.on("success", onCopySuccess);
+          if (
+            window.document.getElementById("quarto-embedded-source-code-modal")
+          ) {
+            // For code content inside modals, clipBoardJS needs to be initialized with a container option
+            // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+            const clipboardModal = new window.ClipboardJS(
+              ".code-copy-button[data-in-quarto-modal]",
+              {
+                text: getTextToCopy,
+                container: window.document.getElementById(
+                  "quarto-embedded-source-code-modal"
+                ),
+              }
+            );
+            clipboardModal.on("success", onCopySuccess);
+          }
+          var localhostRegex = new RegExp(
+            /^(?:http|https):\/\/localhost\:?[0-9]*\//
+          );
+          var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp("/" + window.location.host + "/");
+          var isInternal = (href) => {
+            return (
+              filterRegex.test(href) ||
+              localhostRegex.test(href) ||
+              mailtoRegex.test(href)
+            );
+          };
+          // Inspect non-navigation links and adorn them if external
+          var links = window.document.querySelectorAll(
+            "a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)"
+          );
+          for (var i = 0; i < links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+          function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+            const config = {
+              allowHTML: true,
+              maxWidth: 500,
+              delay: 100,
+              arrow: false,
+              appendTo: function (el) {
+                return el.parentElement;
+              },
+              interactive: true,
+              interactiveBorder: 10,
+              theme: "quarto",
+              placement: "bottom-start",
+            };
+            if (contentFn) {
+              config.content = contentFn;
+            }
+            if (onTriggerFn) {
+              config.onTrigger = onTriggerFn;
+            }
+            if (onUntriggerFn) {
+              config.onUntrigger = onUntriggerFn;
+            }
+            window.tippy(el, config);
+          }
+          const noterefs = window.document.querySelectorAll(
+            'a[role="doc-noteref"]'
+          );
+          for (var i = 0; i < noterefs.length; i++) {
+            const ref = noterefs[i];
+            tippyHover(ref, function () {
+              // use id or data attribute instead here
+              let href =
+                ref.getAttribute("data-footnote-href") ||
+                ref.getAttribute("href");
+              try {
+                href = new URL(href).hash;
+              } catch {}
+              const id = href.replace(/^#\/?/, "");
+              const note = window.document.getElementById(id);
+              if (note) {
+                return note.innerHTML;
+              } else {
+                return "";
+              }
+            });
+          }
+          const xrefs = window.document.querySelectorAll("a.quarto-xref");
+          const processXRef = (id, note) => {
+            // Strip column container classes
+            const stripColumnClz = (el) => {
+              el.classList.remove("page-full", "page-columns");
+              if (el.children) {
+                for (const child of el.children) {
+                  stripColumnClz(child);
+                }
+              }
+            };
+            stripColumnClz(note);
+            if (id === null || id.startsWith("sec-")) {
+              // Special case sections, only their first couple elements
+              const container = document.createElement("div");
+              if (note.children && note.children.length > 2) {
+                container.appendChild(note.children[0].cloneNode(true));
+                for (let i = 1; i < note.children.length; i++) {
+                  const child = note.children[i];
+                  if (child.tagName === "P" && child.innerText === "") {
+                    continue;
+                  } else {
+                    container.appendChild(child.cloneNode(true));
+                    break;
+                  }
+                }
+                if (window.Quarto?.typesetMath) {
+                  window.Quarto.typesetMath(container);
+                }
+                return container.innerHTML;
+              } else {
+                if (window.Quarto?.typesetMath) {
+                  window.Quarto.typesetMath(note);
+                }
+                return note.innerHTML;
+              }
+            } else {
+              // Remove any anchor links if they are present
+              const anchorLink = note.querySelector("a.anchorjs-link");
+              if (anchorLink) {
+                anchorLink.remove();
+              }
+              if (window.Quarto?.typesetMath) {
+                window.Quarto.typesetMath(note);
+              }
+              // TODO in 1.5, we should make sure this works without a callout special case
+              if (note.classList.contains("callout")) {
+                return note.outerHTML;
+              } else {
+                return note.innerHTML;
+              }
+            }
+          };
+          for (var i = 0; i < xrefs.length; i++) {
+            const xref = xrefs[i];
+            tippyHover(
+              xref,
+              undefined,
+              function (instance) {
+                instance.disable();
+                let url = xref.getAttribute("href");
+                let hash = undefined;
+                if (url.startsWith("#")) {
+                  hash = url;
+                } else {
+                  try {
+                    hash = new URL(url).hash;
+                  } catch {}
+                }
+                if (hash) {
+                  const id = hash.replace(/^#\/?/, "");
+                  const note = window.document.getElementById(id);
+                  if (note !== null) {
+                    try {
+                      const html = processXRef(id, note.cloneNode(true));
+                      instance.setContent(html);
+                    } finally {
+                      instance.enable();
+                      instance.show();
+                    }
+                  } else {
+                    // See if we can fetch this
+                    fetch(url.split("#")[0])
+                      .then((res) => res.text())
+                      .then((html) => {
+                        const parser = new DOMParser();
+                        const htmlDoc = parser.parseFromString(
+                          html,
+                          "text/html"
+                        );
+                        const note = htmlDoc.getElementById(id);
+                        if (note !== null) {
+                          const html = processXRef(id, note);
+                          instance.setContent(html);
+                        }
+                      })
+                      .finally(() => {
+                        instance.enable();
+                        instance.show();
+                      });
+                  }
+                } else {
+                  // See if we can fetch a full url (with no hash to target)
+                  // This is a special case and we should probably do some content thinning / targeting
+                  fetch(url)
+                    .then((res) => res.text())
+                    .then((html) => {
+                      const parser = new DOMParser();
+                      const htmlDoc = parser.parseFromString(html, "text/html");
+                      const note = htmlDoc.querySelector("main.content");
+                      if (note !== null) {
+                        // This should only happen for chapter cross references
+                        // (since there is no id in the URL)
+                        // remove the first header
+                        if (
+                          note.children.length > 0 &&
+                          note.children[0].tagName === "HEADER"
+                        ) {
+                          note.children[0].remove();
+                        }
+                        const html = processXRef(null, note);
+                        instance.setContent(html);
+                      }
+                    })
+                    .finally(() => {
+                      instance.enable();
+                      instance.show();
+                    });
+                }
+              },
+              function (instance) {}
+            );
+          }
+          let selectedAnnoteEl;
+          const selectorForAnnotation = (cell, annotation) => {
+            let cellAttr = 'data-code-cell="' + cell + '"';
+            let lineAttr = 'data-code-annotation="' + annotation + '"';
+            const selector = "span[" + cellAttr + "][" + lineAttr + "]";
+            return selector;
+          };
+          const selectCodeLines = (annoteEl) => {
+            const doc = window.document;
+            const targetCell = annoteEl.getAttribute("data-target-cell");
+            const targetAnnotation = annoteEl.getAttribute(
+              "data-target-annotation"
+            );
+            const annoteSpan = window.document.querySelector(
+              selectorForAnnotation(targetCell, targetAnnotation)
+            );
+            const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+            const lineIds = lines.map((line) => {
+              return targetCell + "-" + line;
+            });
+            let top = null;
+            let height = null;
+            let parent = null;
+            if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+              if (lineIds.length > 1) {
+                const lastEl = window.document.getElementById(
+                  lineIds[lineIds.length - 1]
+                );
+                const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+                height = bottom - top;
+              }
+              if (top !== null && height !== null && parent !== null) {
+                // cook up a div (if necessary) and position it
+                let div = window.document.getElementById(
+                  "code-annotation-line-highlight"
+                );
+                if (div === null) {
+                  div = window.document.createElement("div");
+                  div.setAttribute("id", "code-annotation-line-highlight");
+                  div.style.position = "absolute";
+                  parent.appendChild(div);
+                }
+                div.style.top = top - 2 + "px";
+                div.style.height = height + 4 + "px";
+                div.style.left = 0;
+                let gutterDiv = window.document.getElementById(
+                  "code-annotation-line-highlight-gutter"
+                );
+                if (gutterDiv === null) {
+                  gutterDiv = window.document.createElement("div");
+                  gutterDiv.setAttribute(
+                    "id",
+                    "code-annotation-line-highlight-gutter"
+                  );
+                  gutterDiv.style.position = "absolute";
+                  const codeCell = window.document.getElementById(targetCell);
+                  const gutter = codeCell.querySelector(
+                    ".code-annotation-gutter"
+                  );
+                  gutter.appendChild(gutterDiv);
+                }
+                gutterDiv.style.top = top - 2 + "px";
+                gutterDiv.style.height = height + 4 + "px";
+              }
+              selectedAnnoteEl = annoteEl;
+            }
+          };
+          const unselectCodeLines = () => {
+            const elementsIds = [
+              "code-annotation-line-highlight",
+              "code-annotation-line-highlight-gutter",
+            ];
+            elementsIds.forEach((elId) => {
+              const div = window.document.getElementById(elId);
+              if (div) {
+                div.remove();
+              }
+            });
+            selectedAnnoteEl = undefined;
+          };
+          // Handle positioning of the toggle
+          window.addEventListener(
+            "resize",
+            throttle(() => {
+              elRect = undefined;
+              if (selectedAnnoteEl) {
+                selectCodeLines(selectedAnnoteEl);
+              }
+            }, 10)
+          );
+          function throttle(fn, ms) {
+            let throttle = false;
+            let timer;
+            return (...args) => {
+              if (!throttle) {
+                // first call gets through
+                fn.apply(this, args);
+                throttle = true;
+              } else {
+                // all the others get throttled
+                if (timer) clearTimeout(timer); // cancel #2
+                timer = setTimeout(() => {
+                  fn.apply(this, args);
+                  timer = throttle = false;
+                }, ms);
+              }
+            };
+          }
+          // Attach click handler to the DT
+          const annoteDls = window.document.querySelectorAll(
+            "dt[data-target-cell]"
+          );
+          for (const annoteDlNode of annoteDls) {
+            annoteDlNode.addEventListener("click", (event) => {
+              const clickedEl = event.target;
+              if (clickedEl !== selectedAnnoteEl) {
+                unselectCodeLines();
+                const activeEl = window.document.querySelector(
+                  "dt[data-target-cell].code-annotation-active"
+                );
+                if (activeEl) {
+                  activeEl.classList.remove("code-annotation-active");
+                }
+                selectCodeLines(clickedEl);
+                clickedEl.classList.add("code-annotation-active");
+              } else {
+                // Unselect the line
+                unselectCodeLines();
+                clickedEl.classList.remove("code-annotation-active");
+              }
+            });
+          }
+          const findCites = (el) => {
+            const parentEl = el.parentElement;
+            if (parentEl) {
+              const cites = parentEl.dataset.cites;
+              if (cites) {
+                return {
+                  el,
+                  cites: cites.split(" "),
+                };
+              } else {
+                return findCites(el.parentElement);
+              }
+            } else {
+              return undefined;
+            }
+          };
+          var bibliorefs = window.document.querySelectorAll(
+            'a[role="doc-biblioref"]'
+          );
+          for (var i = 0; i < bibliorefs.length; i++) {
+            const ref = bibliorefs[i];
+            const citeInfo = findCites(ref);
+            if (citeInfo) {
+              tippyHover(citeInfo.el, function () {
+                var popup = window.document.createElement("div");
+                citeInfo.cites.forEach(function (cite) {
+                  var citeDiv = window.document.createElement("div");
+                  citeDiv.classList.add("hanging-indent");
+                  citeDiv.classList.add("csl-entry");
+                  var biblioDiv = window.document.getElementById("ref-" + cite);
+                  if (biblioDiv) {
+                    citeDiv.innerHTML = biblioDiv.innerHTML;
+                  }
+                  popup.appendChild(citeDiv);
+                });
+                return popup.innerHTML;
+              });
+            }
+          }
+        });
+      </script>
+    </div>
+    <!-- /content -->
+  </body>
+</html>
